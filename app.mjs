@@ -1,1 +1,9 @@
-const normalize=v=>v==='en'?'en':['zh','zh-CN','zh-Hans'].includes(v)?'zh':null;let saved;try{saved=localStorage.getItem('musedlab.preview.language');}catch{}let language=normalize(new URL(location.href).searchParams.get('lang'))||normalize(saved)||'en';function render(){document.documentElement.lang=language==='zh'?'zh-CN':'en';for(const el of document.querySelectorAll('[data-en]'))el.textContent=el.dataset[language];for(const b of document.querySelectorAll('[data-language]'))b.setAttribute('aria-pressed',String(b.dataset.language===language));for(const a of document.querySelectorAll('a[href]')){const u=new URL(a.href);if(u.searchParams.has('lang')){u.searchParams.set('lang',language);a.href=u.href;}}const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(null,'',url.pathname+url.search);try{localStorage.setItem('musedlab.preview.language',language);}catch{}}for(const b of document.querySelectorAll('[data-language]'))b.onclick=()=>{language=b.dataset.language;render();};render();
+const normalize=value=>/^en$/i.test(value||'')?'en':/^zh(?:-cn|-hans)?$/i.test(value||'')?'zh':null;
+const destination=new URL('https://ruthmann.github.io/rengongfu-sandbox/workbench/weekend/');
+let saved;try{saved=localStorage.getItem('musedlab.preview.language')}catch{}
+const language=normalize(new URLSearchParams(location.search).get('lang'))||normalize(saved);
+if(language)destination.searchParams.set('lang',language);
+// The established workbench retains its own sign-in and local session state.
+// Only language crosses from this entry hostname; arbitrary queries and fragments do not.
+document.getElementById('continue').href=destination.href;
+location.replace(destination.href);
